@@ -22,7 +22,7 @@ Voici les différentes étapes pour tracer vos barbules avec ce logiciel :
 	Gérer/Applications/Charger un projet/.  Puis  lancer  la   commande :
 	"-vbarun"
 	puis inscriver
-  "talus"
+	"talus"
 
 	1 - Cliquer sur "Sélectionner les lignes d'encadrement du talus" puis
 	sélectionner  en  cliquant sur les objets du dessin représentant  les
