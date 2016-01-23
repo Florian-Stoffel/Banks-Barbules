@@ -1,0 +1,891 @@
+Public returnObj As AcadObject
+Public Lignebasse As AcadObject
+Public bloc_selec As AcadBlock
+Public objCollection1(0 To 0) As AcadObject
+Public objCollection2(0 To 0) As AcadObject
+Dim Label1 As Integer
+
+Sub selection()
+
+If IsNull(returnObj) Then
+    GoTo section1
+Else
+    Set returnObj = Nothing
+End If
+
+If IsNull(Lignebasse) Then
+    GoTo section1
+Else
+    Set Lignebasse = Nothing
+End If
+
+Dim anEnt522 As AcadEntity
+Dim aBRef522 As AcadBlockReference
+
+    For Each anEnt522 In ThisDrawing.ModelSpace
+        If TypeOf anEnt522 Is AcadBlockReference Then
+            Set aBRef522 = anEnt522
+                If aBRef522.Name = "Bloc de selection des ligne de talus" Then
+                    aBRef522.Delete
+               End If
+        End If
+    Next
+
+Dim basePnt(0 To 2) As Double
+basePnt(0) = 0
+basePnt(1) = 0
+basePnt(2) = 0
+
+section1:
+On Error Resume Next
+ThisDrawing.Utility.GetEntity returnObj, basePnt, "Sélectionner la ligne haute du talus"
+Dim acadobj As AcadObject
+
+    If IsNull(returnObj) Then
+        MsgBox "Aucun élément sélctionné : Veuillez re-sélectionner la ligne haute du talus !", vbExclamation
+        GoTo section1
+    End If
+    If TypeOf returnObj Is AcadLine Or returnObj Is AcadPolyline Or returnObj Is AcadSpline Or returnObj Is AcadBlock Or returnObj Is AcadCircle Then
+        GoTo suite
+    Else
+        MsgBox "Un élement non valide a été sélectionné : Veuillez re-sélectionner la ligne haute du talus !", vbExclamation
+        GoTo section1
+    End If
+    
+suite:
+Dim color1 As New AcadAcCmColor
+Call color1.SetRGB(240, 0, 0)
+Dim sup1 As AcadObject
+ThisDrawing.SendCommand ("copier" & vbCr & "(handent """ & returnObj.Handle & """)" & vbCr & "" & vbCr & "0,0" & vbCr & "0,0" & vbCr & "" & vbCr)
+Dim com1 As Integer
+com1 = ThisDrawing.ModelSpace.Count
+Set sup1 = ThisDrawing.ModelSpace.Item(com1 - 1)
+ThisDrawing.ModelSpace.Item(com1 - 1).TrueColor = color1
+Dim Point_de_base(0 To 2) As Double
+Point_de_base(0) = 0: Point_de_base(1) = 0: Point_de_base(2) = 0
+Set bloc_selec = ThisDrawing.Blocks.Add(Point_de_base, "Bloc de selection des ligne de talus")
+
+Dim oEnt5 As AcadEntity
+    For Each oEnt5 In bloc_selec
+        oEnt5.Delete
+    Next
+    
+Dim anEnt5 As AcadEntity
+Dim aBRef5 As AcadBlockReference
+Dim Count As Integer
+Count = ThisDrawing.Blocks.Count
+Dim retObjects1 As Variant
+Set objCollection1(0) = sup1
+retObjects1 = ThisDrawing.CopyObjects(objCollection1)
+meth01 = ThisDrawing.CopyObjects(objCollection1, bloc_selec)
+ThisDrawing.ModelSpace.Item(com1).Delete
+    
+    For Each anEnt5 In ThisDrawing.ModelSpace
+        If TypeOf anEnt5 Is AcadBlockReference Then
+            Set aBRef5 = anEnt5
+                If aBRef5.Name = "Bloc de selection des ligne de talus" Then
+                    aBRef5.Delete
+                End If
+        End If
+    Next
+
+Dim objBlockRef As AcadBlockReference
+Set objBlockRef = ThisDrawing.ModelSpace.InsertBlock(Point_de_base, "Bloc de selection des ligne de talus", 1#, 1#, 1#, 0)
+objBlockRef.Update
+objBlockRef.Visible = True
+ThisDrawing.Regen (acAllViewports)
+
+section2:
+Dim basePntbasse As Variant
+On Error Resume Next
+ThisDrawing.Utility.GetEntity Lignebasse, basePntbasse, "Sélectionner la ligne basse du talus"
+
+    If IsNull(Lignebasse) Then
+        MsgBox "Aucun élément sélctionné : Veuillez re-sélectionner la ligne basse du talus !", vbExclamation
+        GoTo section2
+    End If
+        If TypeOf Lignebasse Is AcadLine Or Lignebasse Is AcadPolyline Or Lignebasse Is AcadSpline Or Lignebasse Is AcadBlock Or Lignebasse Is AcadCircle Then
+        GoTo suite2
+    Else
+        MsgBox "Un élement non valide a été sélectionné : Veuillez re-sélectionner la ligne basse du talus !", vbExclamation
+        GoTo section1
+    End If
+
+suite2:
+Dim color2 As New AcadAcCmColor
+Call color2.SetRGB(0, 240, 0)
+Dim sup2 As AcadObject
+ThisDrawing.SendCommand ("copier" & vbCr & "(handent """ & Lignebasse.Handle & """)" & vbCr & "" & vbCr & "0,0" & vbCr & "0,0" & vbCr & "" & vbCr)
+Dim com2 As Integer
+com2 = ThisDrawing.ModelSpace.Count
+Set sup2 = ThisDrawing.ModelSpace.Item(com2 - 1)
+ThisDrawing.ModelSpace.Item(com2 - 1).TrueColor = color2
+Dim anEnt52 As AcadEntity
+Dim aBRef52 As AcadBlockReference
+Dim Count2 As Integer
+Count2 = ThisDrawing.Blocks.Count
+Dim retObjects2 As Variant
+Set objCollection2(0) = sup2
+retObjects2 = ThisDrawing.CopyObjects(objCollection2)
+meth02 = ThisDrawing.CopyObjects(objCollection2, bloc_selec)
+ThisDrawing.ModelSpace.Item(com2).Delete
+    
+    For Each anEnt52 In ThisDrawing.ModelSpace
+        If TypeOf anEnt52 Is AcadBlockReference Then
+            Set aBRef52 = anEnt52
+                If aBRef52.Name = "Bloc de selection des ligne de talus" Then
+                    aBRef52.Delete
+                End If
+        End If
+    Next
+
+Dim objBlockRef2 As AcadBlockReference
+Set objBlockRef2 = ThisDrawing.ModelSpace.InsertBlock(Point_de_base, "Bloc de selection des ligne de talus", 1#, 1#, 1#, 0)
+objBlockRef2.Update
+objBlockRef2.Visible = True
+bloc_selec.Delete
+objCollection1(0).Delete
+objCollection2(0).Delete
+objCollection1(0) = Nothing
+objCollection2(0) = Nothing
+ThisDrawing.Regen (acAllViewports)
+
+End Sub
+
+Sub tracer()
+
+Dim nombloc As Variant
+nombloc = WIN1.nom_bloc.Value
+y4 = Replace(WIN1.quatre.Value, ",", ".")
+y11 = (WIN1.quatre.Value / WIN1.un.Value)
+y1 = Replace(y11, ",", ".")
+y3 = Replace(WIN1.trois.Value, ",", ".")
+
+If WIN1.bloc.Value = True Then
+
+Dim Block_Talus As AcadBlock
+Dim insertionPnt_block_Talus(0 To 2) As Double
+insertionPnt_block_Talus(0) = 0#: insertionPnt_block_Talus(1) = 0#: insertionPnt_block_Talus(2) = 0#
+Set Block_Talus = ThisDrawing.Blocks.Add(insertionPnt_block_Talus, nombloc)
+Dim BCountt As Integer
+BCountt = ThisDrawing.Blocks.Count
+Dim Pt1(0 To 2) As Double
+Pt1(0) = 0: Pt1(1) = 0: Pt1(2) = 0#
+Dim block1_p1 As AcadBlock
+Dim insertionPnt1_p1(0 To 2) As Double
+insertionPnt1_p1(0) = 0#: insertionPnt1_p1(1) = 0#: insertionPnt1_p1(2) = 0#
+Set block1_p1 = ThisDrawing.Blocks.Add(insertionPnt1_p1, "block1_p1")
+Dim BCount1_p1 As Integer
+BCount1_p1 = ThisDrawing.Blocks.Count
+Dim pointblock1_p1 As AcadPoint
+Set pointblock1_p1 = ThisDrawing.Blocks(BCount1_p1 - 1).AddPoint(Pt1)
+Dim compte1_p1 As Integer
+compte1_p1 = ThisDrawing.ModelSpace.Count
+Dim Mycommand1_p1 As String
+Mycommand1_p1 = "mesurer" & vbCr & "(handent """ & selec.returnObj.Handle & """)" & vbCr & "Bloc" & vbCr & "block1_p1" & vbCr & "Oui" & vbCr & CStr(y4) & vbCr
+ThisDrawing.SendCommand (Mycommand1_p1)
+Dim compte2_p1 As Integer
+compte2_p1 = ThisDrawing.ModelSpace.Count
+diffcompte1_p1 = compte2_p1 - compte1_p1
+Dim hndListe1_p1() As String
+ReDim hndListe1_p1(diffcompte1_p1)
+
+    For i = 0 To diffcompte1_p1 - 1
+        hndListe1_p1(i) = ThisDrawing.ModelSpace.Item(compte1_p1 + i).Handle
+    Next
+    
+Dim compte11_p1 As Integer
+compte11_p1 = ThisDrawing.ModelSpace.Count
+    For i = 0 To diffcompte1_p1 - 1
+        ThisDrawing.SendCommand "DECOMPOS" & vbCr & "(handent """ & hndListe1_p1(i) & """)" & vbCr & "" & vbCr
+    Next
+Dim compte12_p1 As Integer
+compte12_p1 = ThisDrawing.ModelSpace.Count
+diffcompte11_p1 = compte12_p1 - compte11_p1
+Dim oEnt_p1 As AcadEntity
+
+    For Each oEnt_p1 In block1_p1
+        oEnt_p1.Delete
+    Next
+    
+block1_p1.Delete
+Dim m As Integer
+Dim C1_p1() As String
+Dim T_p1() As Double
+
+ReDim C1_p1(0 To diffcompte1_p1 - 1, 0 To 1)
+
+    For m = 0 To (diffcompte1_p1 - 1)
+        T_p1 = ThisDrawing.ModelSpace.Item(compte12_p1 - m - 1).IntersectWith(selec.returnObj, acExtendNone)
+        C1_p1(m, 0) = T_p1(0)
+        C1_p1(m, 1) = T_p1(1)
+    Next m
+    For m = 0 To (diffcompte1_p1 - 1)
+        ThisDrawing.ModelSpace.Item(compte12_p1 - m - 1).Delete
+    Next m
+
+Dim PtDep1(0 To 2) As Double
+PtDep1(0) = 0: PtDep1(1) = 0: PtDep1(2) = 0#
+Dim PtFin1(0 To 2) As Double
+PtFin1(0) = 0: PtFin1(1) = 20: PtFin1(2) = 0#
+Dim block1 As AcadBlock
+Dim insertionPnt1(0 To 2) As Double
+insertionPnt1(0) = 0#: insertionPnt1(1) = 0#: insertionPnt1(2) = 0#
+Set block1 = ThisDrawing.Blocks.Add(insertionPnt1, "block1")
+Dim BCount1 As Integer
+BCount1 = ThisDrawing.Blocks.Count
+Dim droiteblock1 As AcadXline
+Set droiteblock1 = ThisDrawing.Blocks(BCount1 - 1).AddXline(PtDep1, PtFin1)
+Dim compte1 As Integer
+compte1 = ThisDrawing.ModelSpace.Count
+Dim Mycommand1 As String
+Mycommand1 = "mesurer" & vbCr & "(handent """ & selec.returnObj.Handle & """)" & vbCr & "Bloc" & vbCr & "block1" & vbCr & "Oui" & vbCr & CStr(y4) & vbCr
+ThisDrawing.SendCommand (Mycommand1)
+Dim compte2 As Integer
+compte2 = ThisDrawing.ModelSpace.Count
+diffcompte1 = compte2 - compte1
+Dim hndListe1() As String
+ReDim hndListe1(diffcompte1)
+
+    For i = 0 To diffcompte1 - 1
+        hndListe1(i) = ThisDrawing.ModelSpace.Item(compte1 + i).Handle
+    Next
+    
+Dim compte11 As Integer
+compte11 = ThisDrawing.ModelSpace.Count
+
+    For i = 0 To diffcompte1 - 1
+        ThisDrawing.SendCommand "DECOMPOS" & vbCr & "(handent """ & hndListe1(i) & """)" & vbCr & "" & vbCr
+    Next
+    
+Dim compte12 As Integer
+compte12 = ThisDrawing.ModelSpace.Count
+diffcompte11 = compte12 - compte11 ' = 0
+Dim oEnt As AcadEntity
+
+    For Each oEnt In block1
+        oEnt.Delete
+    Next
+    
+block1.Delete
+Dim j As Integer, k As Integer, l As Integer
+Dim ligneFinaleBlock As AcadLine
+Dim intersecx3 As Integer
+Dim intPoints As Variant
+Dim intersec As Integer
+Dim C1() As String
+Dim Tx() As String
+Dim Ty() As String
+Dim D1() As String
+Dim s1 As Integer
+ReDim C1(0 To diffcompte1 - 1, 0 To 1)
+
+    For m = 0 To (diffcompte1 - 1)
+        k = 0
+        j = 0
+        l = 0
+        intPoints = ThisDrawing.ModelSpace.Item(compte12 - m - 1).IntersectWith(selec.Lignebasse, acExtendNone)
+        intersecx3 = 0
+            If VarType(intPoints) <> vbEmpty Then
+                For l = LBound(intPoints) To UBound(intPoints)
+                    intersecx3 = intersecx3 + 1
+                Next l
+            End If
+        intersec = intersecx3 / 3
+        ReDim Tx(0 To intersec - 1)
+        ReDim Ty(0 To intersec - 1)
+               If VarType(intPoints) <> vbEmpty Then
+                   For i = LBound(intPoints) To UBound(intPoints)
+                        Tx(k) = intPoints(j)
+                        Ty(k) = intPoints(j + 1)
+                        i = i + 2
+                        j = j + 3
+                        k = k + 1
+                    Next i
+                End If
+        ReDim D1(0 To intersec - 1)
+            For i = 0 To (intersec - 1)
+                D1(i) = ((((Tx(i) - C1_p1(m, 0)) ^ 2) + ((Ty(i) - C1_p1(m, 1)) ^ 2))) ^ 0.5
+            Next i
+            If (intersec - 1) = 0 Then
+                s1 = 0
+            Else
+                s1 = (intersec - 1)
+               For i = 0 To (intersec - 1)
+                    If ((((Tx(i) - C1_p1(m, 0)) ^ 2) + ((Ty(i) - C1_p1(m, 1)) ^ 2))) <= ((((Tx(s1) - C1_p1(m, 0)) ^ 2) + ((Ty(s1) - C1_p1(m, 1)) ^ 2))) Then
+                       s1 = i
+                    End If
+                Next i
+            End If
+        On Error Resume Next
+        C1(m, 0) = Tx(s1)
+        On Error Resume Next
+        C1(m, 1) = Ty(s1)
+    Next m
+    For m = 0 To (diffcompte1 - 1)
+        ThisDrawing.ModelSpace.Item(compte12 - m - 1).Delete
+    Next m
+Dim A1(0 To 2) As Double
+Dim F1(0 To 2) As Double
+Dim Seg1 As AcadLine
+    For i = 0 To (diffcompte1 - 1)
+        A1(0) = C1_p1(i, 0): A1(1) = C1_p1(i, 1): A1(2) = 0
+        F1(0) = C1(i, 0): F1(1) = C1(i, 1): F1(2) = 0
+        Set ligneFinaleBlock = Block_Talus.AddLine(A1, F1)
+   Next i
+    
+Dim Pt1n2(0 To 2) As Double
+Pt1n2(0) = 0: Pt1n2(1) = 0: Pt1n2(2) = 0#
+Dim block1_p1n2 As AcadBlock
+Dim insertionPnt1_p1n2(0 To 2) As Double
+insertionPnt1_p1n2(0) = 0#: insertionPnt1_p1n2(1) = 0#: insertionPnt1_p1n2(2) = 0#
+Set block1_p1n2 = ThisDrawing.Blocks.Add(insertionPnt1_p1n2, "block1_p1n2")
+Dim BCount1_p1n2 As Integer
+BCount1_p1n2 = ThisDrawing.Blocks.Count
+Dim pointblock1_p1n2 As AcadPoint
+Set pointblock1_p1n2 = ThisDrawing.Blocks(BCount1_p1n2 - 1).AddPoint(Pt1n2)
+Dim compte1_p1n2 As Integer
+compte1_p1n2 = ThisDrawing.ModelSpace.Count
+Dim Mycommand1_p1n2 As String
+Mycommand1_p1n2 = "mesurer" & vbCr & "(handent """ & selec.returnObj.Handle & """)" & vbCr & "Bloc" & vbCr & "block1_p1n2" & vbCr & "Oui" & vbCr & CStr(y1) & vbCr
+ThisDrawing.SendCommand (Mycommand1_p1n2)
+Dim compte2_p1n2 As Integer
+compte2_p1n2 = ThisDrawing.ModelSpace.Count
+diffcompte1_p1n2 = compte2_p1n2 - compte1_p1n2
+Dim hndListe1_p1n2() As String
+ReDim hndListe1_p1n2(diffcompte1_p1n2)
+
+    For i = 0 To diffcompte1_p1n2 - 1
+        hndListe1_p1n2(i) = ThisDrawing.ModelSpace.Item(compte1_p1n2 + i).Handle
+    Next
+    
+Dim compte11_p1n2 As Integer
+compte11_p1n2 = ThisDrawing.ModelSpace.Count
+
+    For i = 0 To diffcompte1_p1n2 - 1
+        ThisDrawing.SendCommand "DECOMPOS" & vbCr & "(handent """ & hndListe1_p1n2(i) & """)" & vbCr & "" & vbCr
+    Next
+    
+Dim compte12_p1n2 As Integer
+compte12_p1n2 = ThisDrawing.ModelSpace.Count
+diffcompte11_p1n2 = compte12_p1n2 - compte11_p1n2
+Dim oEnt_p1n2 As AcadEntity
+
+    For Each oEnt_p1n2 In block1_p1n2
+        oEnt_p1n2.Delete
+    Next
+    
+block1_p1n2.Delete
+Dim C1_p1n2() As String
+Dim T_p1n2() As Double
+
+ReDim C1_p1n2(0 To diffcompte1_p1n2 - 1, 0 To 1)
+
+    For m = 0 To (diffcompte1_p1n2 - 1)
+        T_p1n2 = ThisDrawing.ModelSpace.Item(compte12_p1n2 - m - 1).IntersectWith(selec.returnObj, acExtendNone)
+        C1_p1n2(m, 0) = T_p1n2(0)
+        C1_p1n2(m, 1) = T_p1n2(1)
+    Next m
+    For m = 0 To (diffcompte1_p1n2 - 1)
+        ThisDrawing.ModelSpace.Item(compte12_p1n2 - m - 1).Delete
+    Next m
+
+Dim PtDep1n2(0 To 2) As Double
+PtDep1n2(0) = 0: PtDep1n2(1) = 0: PtDep1n2(2) = 0#
+Dim PtFin1n2(0 To 2) As Double
+PtFin1n2(0) = 0: PtFin1n2(1) = 20: PtFin1n2(2) = 0#
+Dim block1n2 As AcadBlock
+Dim insertionPnt1n2(0 To 2) As Double
+insertionPnt1n2(0) = 0#: insertionPnt1n2(1) = 0#: insertionPnt1n2(2) = 0#
+Set block1n2 = ThisDrawing.Blocks.Add(insertionPnt1n2, "block1n2")
+Dim BCount1n2 As Integer
+BCount1n2 = ThisDrawing.Blocks.Count
+Dim droiteblock1n2 As AcadXline
+Set droiteblock1n2 = ThisDrawing.Blocks(BCount1n2 - 1).AddXline(PtDep1n2, PtFin1n2)
+Dim compte1n2 As Integer
+compte1n2 = ThisDrawing.ModelSpace.Count
+Dim Mycommand1n2 As String
+Mycommand1n2 = "mesurer" & vbCr & "(handent """ & selec.returnObj.Handle & """)" & vbCr & "Bloc" & vbCr & "block1n2" & vbCr & "Oui" & vbCr & CStr(y1) & vbCr
+ThisDrawing.SendCommand (Mycommand1n2)
+Dim compte2n2 As Integer
+compte2n2 = ThisDrawing.ModelSpace.Count
+diffcompte1n2 = compte2n2 - compte1n2
+Dim hndListe1n2() As String
+ReDim hndListe1n2(diffcompte1n2)
+
+    For i = 0 To diffcompte1n2 - 1
+        hndListe1n2(i) = ThisDrawing.ModelSpace.Item(compte1n2 + i).Handle
+    Next
+    
+Dim compte11n2 As Integer
+compte11n2 = ThisDrawing.ModelSpace.Count
+    For i = 0 To diffcompte1n2 - 1
+        ThisDrawing.SendCommand "DECOMPOS" & vbCr & "(handent """ & hndListe1n2(i) & """)" & vbCr & "" & vbCr
+    Next
+Dim compte12n2 As Integer
+compte12n2 = ThisDrawing.ModelSpace.Count
+diffcompte11n2 = compte12n2 - compte11n2 ' = 0
+Dim oEntn2 As AcadEntity
+
+    For Each oEntn2 In block1n2
+        oEntn2.Delete
+    Next
+    
+block1n2.Delete
+Dim intersecx3n2 As Integer
+Dim intersecn2 As Integer
+Dim intPointsn2 As Variant
+Dim C1n2() As String
+Dim Txn2() As String
+Dim Tyn2() As String
+Dim D1n2() As String
+Dim s1n2 As Integer
+ReDim C1n2(0 To diffcompte1n2 - 1, 0 To 1)
+    For m = 0 To (diffcompte1n2 - 1)
+        k = 0
+        j = 0
+        l = 0
+        intPointsn2 = ThisDrawing.ModelSpace.Item(compte12n2 - m - 1).IntersectWith(selec.Lignebasse, acExtendNone)
+        intersecx3n2 = 0
+            If VarType(intPointsn2) <> vbEmpty Then
+                For l = LBound(intPointsn2) To UBound(intPointsn2)
+                    intersecx3n2 = intersecx3n2 + 1
+                Next l
+            End If
+        intersecn2 = intersecx3n2 / 3
+        ReDim Txn2(0 To intersecn2 - 1)
+        ReDim Tyn2(0 To intersecn2 - 1)
+               If VarType(intPointsn2) <> vbEmpty Then
+                   For i = LBound(intPointsn2) To UBound(intPointsn2)
+                        Txn2(k) = intPointsn2(j)
+                        Tyn2(k) = intPointsn2(j + 1)
+                        i = i + 2
+                        j = j + 3
+                        k = k + 1
+                    Next i
+                End If
+        ReDim D1n2(0 To intersecn2 - 1)
+            For i = 0 To (intersecn2 - 1)
+                D1n2(i) = (((Txn2(i) - C1_p1n2(m, 0)) ^ 2) + ((Tyn2(i) - C1_p1n2(m, 1)) ^ 2)) ^ 0.5
+            Next i
+            If (intersecn2 - 1) = 0 Then
+                s1n2 = 0
+            Else
+                s1n2 = (intersecn2 - 1)
+               For i = 0 To (intersecn2 - 1)
+                    If ((((Txn2(i) - C1_p1n2(m, 0)) ^ 2) + ((Tyn2(i) - C1_p1n2(m, 1)) ^ 2))) <= ((((Txn2(s1n2) - C1_p1n2(m, 0)) ^ 2) + ((Tyn2(s1n2) - C1_p1n2(m, 1)) ^ 2))) Then
+                       s1n2 = i
+                    End If
+                Next i
+            End If
+        On Error Resume Next
+        C1n2(m, 0) = Txn2(s1n2)
+        On Error Resume Next
+        C1n2(m, 1) = Tyn2(s1n2)
+    Next m
+    For m = 0 To (diffcompte1n2 - 1)
+        ThisDrawing.ModelSpace.Item(compte12n2 - m - 1).Delete
+    Next m
+Dim ligneFinaleBlockn2 As AcadLine
+Dim PetiteLongueur As Single
+Dim pFn2(0 To 2) As Double
+Dim A1n2(0 To 2) As Double
+Dim F1n2(0 To 2) As Double
+Dim longReen2 As Variant
+Dim Seg1n2 As AcadLine
+Dim norm2 As Variant
+Dim nxn2 As Variant
+Dim nyn2 As Variant
+PetiteLongueur = WIN1.trois.Value
+    For i = 0 To (diffcompte1n2 - 1)
+        A1n2(0) = C1_p1n2(i, 0): A1n2(1) = C1_p1n2(i, 1): A1n2(2) = 0
+        F1n2(0) = C1n2(i, 0): F1n2(1) = C1n2(i, 1): F1n2(2) = 0
+        norm2 = 1 / (((((A1n2(0) - F1n2(0))) ^ 2 + ((A1n2(1) - F1n2(1))) ^ 2) ^ 0.5))
+        longReen2 = 1 / norm2
+        nxn2 = PetiteLongueur * ((A1n2(0) - F1n2(0))) * norm2
+        nyn2 = PetiteLongueur * ((A1n2(1) - F1n2(1))) * norm2
+            If longReen2 < PetiteLongueur Then
+                    pFn2(0) = F1n2(0): pFn2(1) = F1n2(1): pFn2(2) = 0#
+                Else
+                    pFn2(0) = A1n2(0) - nxn2: pFn2(1) = A1n2(1) - nyn2: pFn2(2) = 0#
+            End If
+        Set ligneFinaleBlockn2 = Block_Talus.AddLine(A1n2, pFn2)
+    Next i
+    
+Dim anEnt As AcadEntity
+Dim aBRef As AcadBlockReference
+
+    For Each anEnt In ThisDrawing.ModelSpace
+        If TypeOf anEnt Is AcadBlockReference Then
+            Set aBRef = anEnt
+                If aBRef.Name = nombloc Then
+                    aBRef.Delete
+                End If
+        End If
+    Next
+    For Each anEnt5 In ThisDrawing.ModelSpace
+        If TypeOf anEnt5 Is AcadBlockReference Then
+            Set aBRef5 = anEnt5
+                If aBRef5.Name = "Bloc de selection des ligne de talus" Then
+                    aBRef5.Delete
+                End If
+        End If
+    Next
+
+Dim objBlockRef As AcadBlockReference
+Set objBlockRef = ThisDrawing.ModelSpace.InsertBlock(insertionPnt_block_Talus, nombloc, 1#, 1#, 1#, 0)
+objBlockRef.Update
+objBlockRef.Visible = True
+bloc_selec.Delete
+ThisDrawing.Regen (acAllViewports)
+
+Else
+
+insertionPnt_block_Talus(0) = 0#: insertionPnt_block_Talus(1) = 0#: insertionPnt_block_Talus(2) = 0#
+Set Block_Talus = ThisDrawing.Blocks.Add(insertionPnt_block_Talus, nombloc)
+BCountt = ThisDrawing.Blocks.Count
+Pt1(0) = 0: Pt1(1) = 0: Pt1(2) = 0#
+insertionPnt1_p1(0) = 0#: insertionPnt1_p1(1) = 0#: insertionPnt1_p1(2) = 0#
+Set block1_p1 = ThisDrawing.Blocks.Add(insertionPnt1_p1, "block1_p1")
+BCount1_p1 = ThisDrawing.Blocks.Count
+Set pointblock1_p1 = ThisDrawing.Blocks(BCount1_p1 - 1).AddPoint(Pt1)
+compte1_p1 = ThisDrawing.ModelSpace.Count
+Mycommand1_p1 = "mesurer" & vbCr & "(handent """ & selec.returnObj.Handle & """)" & vbCr & "Bloc" & vbCr & "block1_p1" & vbCr & "Oui" & vbCr & CStr(y4) & vbCr
+ThisDrawing.SendCommand (Mycommand1_p1)
+compte2_p1 = ThisDrawing.ModelSpace.Count
+diffcompte1_p1 = compte2_p1 - compte1_p1
+ReDim hndListe1_p1(diffcompte1_p1)
+
+    For i = 0 To diffcompte1_p1 - 1
+        hndListe1_p1(i) = ThisDrawing.ModelSpace.Item(compte1_p1 + i).Handle
+    Next
+    
+compte11_p1 = ThisDrawing.ModelSpace.Count
+
+    For i = 0 To diffcompte1_p1 - 1
+        ThisDrawing.SendCommand "DECOMPOS" & vbCr & "(handent """ & hndListe1_p1(i) & """)" & vbCr & "" & vbCr
+    Next
+
+compte12_p1 = ThisDrawing.ModelSpace.Count
+diffcompte11_p1 = compte12_p1 - compte11_p1 ' = 0
+
+    For Each oEnt_p1 In block1_p1
+        oEnt_p1.Delete
+    Next
+    
+block1_p1.Delete
+ReDim C1_p1(0 To diffcompte1_p1 - 1, 0 To 1)
+
+    For m = 0 To (diffcompte1_p1 - 1)
+        T_p1 = ThisDrawing.ModelSpace.Item(compte12_p1 - m - 1).IntersectWith(selec.returnObj, acExtendNone)
+        C1_p1(m, 0) = T_p1(0)
+        C1_p1(m, 1) = T_p1(1)
+    Next m
+    For m = 0 To (diffcompte1_p1 - 1)
+        ThisDrawing.ModelSpace.Item(compte12_p1 - m - 1).Delete
+    Next m
+
+PtDep1(0) = 0: PtDep1(1) = 0: PtDep1(2) = 0#
+PtFin1(0) = 0: PtFin1(1) = 20: PtFin1(2) = 0#
+insertionPnt1(0) = 0#: insertionPnt1(1) = 0#: insertionPnt1(2) = 0#
+Set block1 = ThisDrawing.Blocks.Add(insertionPnt1, "block1")
+BCount1 = ThisDrawing.Blocks.Count
+Set droiteblock1 = ThisDrawing.Blocks(BCount1 - 1).AddXline(PtDep1, PtFin1)
+compte1 = ThisDrawing.ModelSpace.Count
+Mycommand1 = "mesurer" & vbCr & "(handent """ & selec.returnObj.Handle & """)" & vbCr & "Bloc" & vbCr & "block1" & vbCr & "Oui" & vbCr & CStr(y4) & vbCr
+ThisDrawing.SendCommand (Mycommand1)
+compte2 = ThisDrawing.ModelSpace.Count
+diffcompte1 = compte2 - compte1
+ReDim hndListe1(diffcompte1)
+
+    For i = 0 To diffcompte1 - 1
+        hndListe1(i) = ThisDrawing.ModelSpace.Item(compte1 + i).Handle
+    Next
+
+compte11 = ThisDrawing.ModelSpace.Count
+
+    For i = 0 To diffcompte1 - 1
+        ThisDrawing.SendCommand "DECOMPOS" & vbCr & "(handent """ & hndListe1(i) & """)" & vbCr & "" & vbCr
+    Next
+
+compte12 = ThisDrawing.ModelSpace.Count
+diffcompte11 = compte12 - compte11 ' = 0
+
+    For Each oEnt In block1
+        oEnt.Delete
+    Next
+    
+block1.Delete
+ReDim C1(0 To diffcompte1 - 1, 0 To 1)
+
+    For m = 0 To (diffcompte1 - 1)
+        k = 0
+        j = 0
+        l = 0
+        intPoints = ThisDrawing.ModelSpace.Item(compte12 - m - 1).IntersectWith(selec.Lignebasse, acExtendNone)
+        intersecx3 = 0
+            If VarType(intPoints) <> vbEmpty Then
+                For l = LBound(intPoints) To UBound(intPoints)
+                    intersecx3 = intersecx3 + 1
+                Next l
+            End If
+        intersec = intersecx3 / 3
+        ReDim Tx(0 To intersec - 1)
+        ReDim Ty(0 To intersec - 1)
+               If VarType(intPoints) <> vbEmpty Then
+                   For i = LBound(intPoints) To UBound(intPoints)
+                        Tx(k) = intPoints(j)
+                        Ty(k) = intPoints(j + 1)
+                        i = i + 2
+                        j = j + 3
+                        k = k + 1
+                    Next i
+                End If
+        ReDim D1(0 To intersec - 1)
+            For i = 0 To (intersec - 1)
+                D1(i) = ((((Tx(i) - C1_p1(m, 0)) ^ 2) + ((Ty(i) - C1_p1(m, 1)) ^ 2))) ^ 0.5
+            Next i
+            If (intersec - 1) = 0 Then
+                s1 = 0
+            Else
+                s1 = (intersec - 1)
+               For i = 0 To (intersec - 1)
+                    If ((((Tx(i) - C1_p1(m, 0)) ^ 2) + ((Ty(i) - C1_p1(m, 1)) ^ 2))) <= ((((Tx(s1) - C1_p1(m, 0)) ^ 2) + ((Ty(s1) - C1_p1(m, 1)) ^ 2))) Then
+                       s1 = i
+                    End If
+                Next i
+            End If
+        On Error Resume Next
+        C1(m, 0) = Tx(s1)
+        On Error Resume Next
+        C1(m, 1) = Ty(s1)
+    Next m
+    
+    For m = 0 To (diffcompte1 - 1)
+        ThisDrawing.ModelSpace.Item(compte12 - m - 1).Delete
+    Next m
+    For i = 0 To (diffcompte1 - 1)
+        A1(0) = C1_p1(i, 0): A1(1) = C1_p1(i, 1): A1(2) = 0
+        F1(0) = C1(i, 0): F1(1) = C1(i, 1): F1(2) = 0
+        ligne1 = ThisDrawing.ModelSpace.AddLine(A1, F1)
+   Next i
+   
+Pt1n2(0) = 0: Pt1n2(1) = 0: Pt1n2(2) = 0#
+insertionPnt1_p1n2(0) = 0#: insertionPnt1_p1n2(1) = 0#: insertionPnt1_p1n2(2) = 0#
+Set block1_p1n2 = ThisDrawing.Blocks.Add(insertionPnt1_p1n2, "block1_p1n2")
+BCount1_p1n2 = ThisDrawing.Blocks.Count
+Set pointblock1_p1n2 = ThisDrawing.Blocks(BCount1_p1n2 - 1).AddPoint(Pt1n2)
+compte1_p1n2 = ThisDrawing.ModelSpace.Count
+Mycommand1_p1n2 = "mesurer" & vbCr & "(handent """ & selec.returnObj.Handle & """)" & vbCr & "Bloc" & vbCr & "block1_p1n2" & vbCr & "Oui" & vbCr & CStr(y1) & vbCr
+ThisDrawing.SendCommand (Mycommand1_p1n2)
+compte2_p1n2 = ThisDrawing.ModelSpace.Count
+diffcompte1_p1n2 = compte2_p1n2 - compte1_p1n2
+ReDim hndListe1_p1n2(diffcompte1_p1n2)
+
+    For i = 0 To diffcompte1_p1n2 - 1
+        hndListe1_p1n2(i) = ThisDrawing.ModelSpace.Item(compte1_p1n2 + i).Handle
+    Next
+    
+compte11_p1n2 = ThisDrawing.ModelSpace.Count
+
+    For i = 0 To diffcompte1_p1n2 - 1
+        ThisDrawing.SendCommand "DECOMPOS" & vbCr & "(handent """ & hndListe1_p1n2(i) & """)" & vbCr & "" & vbCr
+    Next
+
+compte12_p1n2 = ThisDrawing.ModelSpace.Count
+diffcompte11_p1n2 = compte12_p1n2 - compte11_p1n2 ' = 0
+
+    For Each oEnt_p1n2 In block1_p1n2
+        oEnt_p1n2.Delete
+    Next
+    
+block1_p1n2.Delete
+ReDim C1_p1n2(0 To diffcompte1_p1n2 - 1, 0 To 1)
+
+    For m = 0 To (diffcompte1_p1n2 - 1)
+        T_p1n2 = ThisDrawing.ModelSpace.Item(compte12_p1n2 - m - 1).IntersectWith(selec.returnObj, acExtendNone)
+        C1_p1n2(m, 0) = T_p1n2(0)
+        C1_p1n2(m, 1) = T_p1n2(1)
+    Next m
+    For m = 0 To (diffcompte1_p1n2 - 1)
+        ThisDrawing.ModelSpace.Item(compte12_p1n2 - m - 1).Delete
+    Next m
+
+PtDep1n2(0) = 0: PtDep1n2(1) = 0: PtDep1n2(2) = 0#
+PtFin1n2(0) = 0: PtFin1n2(1) = 20: PtFin1n2(2) = 0#
+insertionPnt1n2(0) = 0#: insertionPnt1n2(1) = 0#: insertionPnt1n2(2) = 0#
+Set block1n2 = ThisDrawing.Blocks.Add(insertionPnt1n2, "block1n2")
+BCount1n2 = ThisDrawing.Blocks.Count
+Set droiteblock1n2 = ThisDrawing.Blocks(BCount1n2 - 1).AddXline(PtDep1n2, PtFin1n2)
+compte1n2 = ThisDrawing.ModelSpace.Count
+Mycommand1n2 = "mesurer" & vbCr & "(handent """ & selec.returnObj.Handle & """)" & vbCr & "Bloc" & vbCr & "block1n2" & vbCr & "Oui" & vbCr & CStr(y1) & vbCr
+ThisDrawing.SendCommand (Mycommand1n2)
+compte2n2 = ThisDrawing.ModelSpace.Count
+diffcompte1n2 = compte2n2 - compte1n2
+ReDim hndListe1n2(diffcompte1n2)
+
+    For i = 0 To diffcompte1n2 - 1
+        hndListe1n2(i) = ThisDrawing.ModelSpace.Item(compte1n2 + i).Handle
+    Next
+    
+compte11n2 = ThisDrawing.ModelSpace.Count
+
+    For i = 0 To diffcompte1n2 - 1
+        ThisDrawing.SendCommand "DECOMPOS" & vbCr & "(handent """ & hndListe1n2(i) & """)" & vbCr & "" & vbCr
+    Next
+
+compte12n2 = ThisDrawing.ModelSpace.Count
+diffcompte11n2 = compte12n2 - compte11n2 ' = 0
+
+    For Each oEntn2 In block1n2
+        oEntn2.Delete
+    Next
+    
+block1n2.Delete
+ReDim C1n2(0 To diffcompte1n2 - 1, 0 To 1)
+
+    For m = 0 To (diffcompte1n2 - 1)
+        k = 0
+        j = 0
+        l = 0
+        intPointsn2 = ThisDrawing.ModelSpace.Item(compte12n2 - m - 1).IntersectWith(selec.Lignebasse, acExtendNone)
+        intersecx3n2 = 0
+            If VarType(intPointsn2) <> vbEmpty Then
+                For l = LBound(intPointsn2) To UBound(intPointsn2)
+                    intersecx3n2 = intersecx3n2 + 1
+                Next l
+            End If
+        intersecn2 = intersecx3n2 / 3
+        ReDim Txn2(0 To intersecn2 - 1)
+        ReDim Tyn2(0 To intersecn2 - 1)
+               If VarType(intPointsn2) <> vbEmpty Then
+                   For i = LBound(intPointsn2) To UBound(intPointsn2)
+                        Txn2(k) = intPointsn2(j)
+                        Tyn2(k) = intPointsn2(j + 1)
+                        i = i + 2
+                        j = j + 3
+                        k = k + 1
+                    Next i
+                End If
+        ReDim D1n2(0 To intersecn2 - 1)
+            For i = 0 To (intersecn2 - 1)
+                D1n2(i) = (((Txn2(i) - C1_p1n2(m, 0)) ^ 2) + ((Tyn2(i) - C1_p1n2(m, 1)) ^ 2)) ^ 0.5
+            Next i
+            If (intersecn2 - 1) = 0 Then
+                s1n2 = 0
+            Else
+                s1n2 = (intersecn2 - 1)
+               For i = 0 To (intersecn2 - 1)
+                    If ((((Txn2(i) - C1_p1n2(m, 0)) ^ 2) + ((Tyn2(i) - C1_p1n2(m, 1)) ^ 2))) <= ((((Txn2(s1n2) - C1_p1n2(m, 0)) ^ 2) + ((Tyn2(s1n2) - C1_p1n2(m, 1)) ^ 2))) Then
+                       s1n2 = i
+                    End If
+                Next i
+            End If
+        On Error Resume Next
+        C1n2(m, 0) = Txn2(s1n2)
+        On Error Resume Next
+        C1n2(m, 1) = Tyn2(s1n2)
+    Next m
+    For m = 0 To (diffcompte1n2 - 1)
+        ThisDrawing.ModelSpace.Item(compte12n2 - m - 1).Delete
+    Next m
+
+PetiteLongueur = WIN1.trois.Value
+    For i = 0 To (diffcompte1n2 - 1)
+        A1n2(0) = C1_p1n2(i, 0): A1n2(1) = C1_p1n2(i, 1): A1n2(2) = 0
+        F1n2(0) = C1n2(i, 0): F1n2(1) = C1n2(i, 1): F1n2(2) = 0
+        norm2 = 1 / (((((A1n2(0) - F1n2(0))) ^ 2 + ((A1n2(1) - F1n2(1))) ^ 2) ^ 0.5))
+        longReen2 = 1 / norm2
+        nxn2 = PetiteLongueur * ((A1n2(0) - F1n2(0))) * norm2
+        nyn2 = PetiteLongueur * ((A1n2(1) - F1n2(1))) * norm2
+            If longReen2 < PetiteLongueur Then
+                    pFn2(0) = F1n2(0): pFn2(1) = F1n2(1): pFn2(2) = 0#
+                Else
+                    pFn2(0) = A1n2(0) - nxn2: pFn2(1) = A1n2(1) - nyn2: pFn2(2) = 0#
+            End If
+        lignen2 = ThisDrawing.ModelSpace.AddLine(A1n2, pFn2)
+    Next i
+    For Each anEnt In ThisDrawing.ModelSpace
+        If TypeOf anEnt Is AcadBlockReference Then
+            Set aBRef = anEnt
+                If aBRef.Name = nombloc Then
+                    aBRef.Delete
+                End If
+        End If
+    Next
+
+bloc_selec.Delete
+ThisDrawing.Regen (acAllViewports)
+
+End If
+
+End Sub
+
+   On Error Resume Next
+    If IsNull(selec.objCollection1(0)) Then
+        MsgBox "Veuillez préalablement sélectionner la ligne haute du talus !", vbExclamation
+        GoTo fin
+    End If
+    
+    On Error Resume Next
+    If IsNull(selec.objCollection2(0)) Then
+        MsgBox "Veuillez préalablement sélectionner la ligne basse du talus !", vbExclamation
+        GoTo fin
+    End If
+    
+    If IsNull(WIN1.quatre.Value) Then
+        MsgBox "La distance curviligne saisi entre les lignes de liaison ne doit pas être nulle !", vbExclamation
+        GoTo fin
+    End If
+    
+    On Error Resume Next
+    If Not IsNumeric(WIN1.quatre.Value) Then
+        MsgBox "La distance curviligne saisi entre les lignes de liaison doivent être une valeur numérique !", vbExclamation
+        GoTo fin
+    End If
+
+    If IsNull(WIN1.un.Value) Then
+        MsgBox "Le nombre d'espace entre les lignes de pente par motif ne doit pas être nul !", vbExclamation
+        GoTo fin
+    End If
+    
+    On Error Resume Next
+    Dim va As Variant
+    va = WIN1.un.Value
+    If CInt(va) <> CDbl(va) Then
+        MsgBox "Le nombre d'espace entre les lignes de pente par motif doit être un entier non nul !", vbExclamation
+        GoTo fin
+    End If
+    
+    If IsNull(va) Then
+        MsgBox "Le nombre d'espace entre les lignes de pente par motif doit être un entier non nul !", vbExclamation
+        GoTo fin
+    End If
+    
+    On Error Resume Next
+    If Not IsNumeric(WIN1.trois.Value) Or WIN1.trois.Value = "" Then
+        MsgBox "La longueur des lignes de pentes doit êter une valeur numérique !", vbExclamation
+        GoTo fin
+    End If
+    
+    If WIN1.bloc = False And WIN1.lignes = False Then
+                MsgBox "Veuillez sélectionner préalablement 'Bloc' ou 'lignes' !", vbExclamation
+        GoTo fin
+    End If
+    
+    On Error Resume Next
+    If bloc = True Then
+        If WIN1.nom_bloc = "" Then
+            MsgBox "Veuillez préalablement entrer un nom de bloc !", vbExclamation
+            GoTo fin
+        End If
+    End If
+
+WIN1.Hide
+
+Call tracer
+
+WIN1.show
+
+fin:
+
